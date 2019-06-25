@@ -1,21 +1,4 @@
-;/*****************************************************************************
-; * @file:    startup_MDR32F9Qx.s
-; * @purpose: CMSIS Cortex-M3 Core Device Startup File for the
-; *           Milandr MDR32F9Qx device series
-; * @version: V1.0
-; * @date:    09/07/2010
-; *****************************************************************************
-; * @copy
-; *
-; * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-; * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-; * TIME. AS A RESULT, PHYTON SHALL NOT BE HELD LIABLE FOR ANY DIRECT, INDIRECT
-; * OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-; * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-; * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-; *
-; * <h2><center>&copy; COPYRIGHT 2010 Phyton</center></h2>
-; ******************************************************************************
+;/*
 ; * FILE startup_MDR32F9Qx.s
 ; */
 
@@ -33,18 +16,6 @@ Stack_Size      EQU     0x00000400
 Stack_Mem       SPACE   Stack_Size
 __initial_sp
 
-                IF RAM_BOOT == 1
-
-; Vector Table Mapped to Address 0 at Reset
-
-                AREA    RESET, DATA, READONLY
-                EXPORT  __Vectors
-                IMPORT  boot_dispatcher
-
-__Vectors       DCD     __initial_sp              ; Top of Stack
-                DCD     boot_dispatcher           ; Main boot function
-
-                ELSE
 
 ; <h> Heap Configuration
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
@@ -124,12 +95,15 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
                 AREA    |.text|, CODE, READONLY
 
 ; Reset handler
-Reset_Handler   PROC
-                EXPORT  Reset_Handler             [WEAK]
-                IMPORT  __main
-                LDR     R0, =__main
-                BX      R0
-                ENDP
+Reset_Handler    PROC
+                 EXPORT  Reset_Handler             [WEAK]
+        IMPORT  SystemInit
+        IMPORT  __main
+                 LDR     R0, =SystemInit
+                 BLX     R0
+                 LDR     R0, =__main
+                 BX      R0
+                 ENDP
 
 ; Dummy Exception Handlers (infinite loops which can be modified)
 
@@ -254,9 +228,8 @@ __user_initial_stackheap
 
                  ENDIF
 
-                 ENDIF
                  END
 
-;/******************* (C) COPYRIGHT 2010 Phyton *********************************
+;/*
 ;*
 ;* END OF FILE startup_MDR32F9Qx.s */
