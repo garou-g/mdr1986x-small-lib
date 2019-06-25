@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "mdr1986.h": "c"
+        "mdr1986.h": "c",
+        "mdr1986ve1t.h": "c",
+        "core_cm1.h": "c"
     }
 }

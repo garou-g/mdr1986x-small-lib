@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/core",
+                "${workspaceFolder}/device",
+                "${workspaceFolder}/module"
+            ],
+            "defines": [
+                "USE_MDR1986VE1T"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,32 @@
+{
+    "configurations": [
+        {
+            "name": "openocd",
+            "request": "launch",
+            "type": "cortex-debug",
+            "executable": "${workspaceRoot}/build/target.elf",
+            "cwd": "${workspaceRoot}",
+            "servertype": "openocd",
+            "device": "1986BE1T",
+            "svdFile": "${workspaceRoot}/libs/MDR1986VE1T.svd",
+            "configFiles": [
+                "/usr/share/openocd/scripts/target/1986be1t_jlink.cfg"
+            ],
+            "runToMain": true,
+            "showDevDebugOutput": false
+        },
+        {
+            "name": "jlink",
+            "request": "launch",
+            "type": "cortex-debug",
+            "executable": "${workspaceRoot}/build/target.elf",
+            "cwd": "${workspaceRoot}",
+            "servertype": "jlink",
+            "device": "1986BE1T",
+            "svdFile": "${workspaceRoot}/device/svd/mdr1986ve1t.svd",
+            "interface": "jtag",
+            "runToMain": true,
+            "showDevDebugOutput": false
+        }
+    ]
+}
