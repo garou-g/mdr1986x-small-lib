@@ -1,33 +1,21 @@
-/**
-  ******************************************************************************
-  * @file    simple_exchange.c
-  * @author  MIEE Application Team
-  * @version v0.2
-  * @date    2019-06-01
-  * @brief   Simple serial exchange protocol.
-  *
-  * @details
-  * Exchange uses fixed size messages with start and end markers. It has
-  * one byte for commands and array for data bytes.
-  *
-  * Changelog:
-  * v0.2 Added function for prepare message structure to transmit.
-  * v0.1 First release. Function for calculating crc8 of message.
-  *
-  ******************************************************************************
-  */
+/*******************************************************************************
+ * @file    simple_exchange.c
+ * @author  GaROU (xgaroux@gmail.com)
+ * @brief   Simple serial exchange protocol
+ * @version 0.2
+ * @date    2019-06-01
+ *
+ * @note
+ * Exchange uses fixed size messages with start and end markers. It has
+ * one byte for commands and array for data bytes.
+ *
+ * Changelog:
+ * v0.2 Added function for prepare message structure to transmit.
+ * v0.1 First release. Function for calculating crc8 of message.
+ ******************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
 #include "simple_exchange.h"
-
-/** @addtogroup SCOE_Embedded_Libs SCOE Embedded Libs
-  * @{
-  */
-
-/** @defgroup Exchange Exchange
-  * @brief Type definitions for SCOE serial exchange protocols
-  * @{
-  */
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
@@ -90,22 +78,18 @@ EXCH_MsgTypedef EXCH_PrepareMsg(uint8_t cmd, const uint8_t *data, uint8_t len)
     return msg;
 }
 
-/** @defgroup Exchange_Exported_Functions Exchange Exported Functions
-  * @{
-  */
-
 /**
-  * @brief  Name  : CRC-8
-            Poly  : 0x31    x^8 + x^5 + x^4 + 1
-            Init  : 0xFF
-            Revert: false
-            XorOut: 0x00
-            Check : 0xF7 ("123456789")
-            MaxLen: 15 bytes (127 bits)
-  * @param  data for calculating
-  * @param  len of data
-  * @retval CRC-8 checksum byte
-  */
+ * @brief Name: CRC-8
+ *      Poly  : 0x31    x^8 + x^5 + x^4 + 1
+ *      Init  : 0xFF
+ *      Revert: false
+ *      XorOut: 0x00
+ *      Check : 0xF7 ("123456789")
+ *      MaxLen: 15 bytes (127 bits)
+ * @param  data for calculating
+ * @param  len of data
+ * @retval CRC-8 checksum byte
+ */
 uint8_t EXCH_Crc8(const uint8_t *data, uint8_t len)
 {
     uint8_t crc = 0xFF;
@@ -116,18 +100,6 @@ uint8_t EXCH_Crc8(const uint8_t *data, uint8_t len)
     return crc;
 }
 
-/**
-  * @}
-  */
-
 /* Private functions ---------------------------------------------------------*/
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /***************************** END OF FILE ************************************/

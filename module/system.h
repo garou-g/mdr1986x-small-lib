@@ -15,14 +15,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include <stdint.h>
 
-/** @addtogroup DINS
-  * @{
-  */
-
-/** @addtogroup System
-  * @{
-  */
-
 /* Exported types ------------------------------------------------------------*/
 typedef enum SYS_Freq_Enum
 {
@@ -63,10 +55,6 @@ typedef enum SYS_State_Enum
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-/** @addtogroup System_Exported_Functions
-  * @{
-  */
-
 /* System and clock configuration functions */
 void SYS_DeInit(void);
 void SYS_ClkInit(SYS_Freq_Type freq);
@@ -74,23 +62,11 @@ void SYS_ClkInit(SYS_Freq_Type freq);
 SYS_State_Type SYS_State(void);
 uint32_t SYS_ChecksumVerify(uint32_t start_address);
 
-/**
-  * @}
-  */
-
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private constants ---------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 #ifdef __cplusplus
 }

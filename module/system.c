@@ -17,15 +17,6 @@
 #include "system.h"
 #include "mdr1986.h"
 
-/** @addtogroup DINS DINS Firmware
-  * @{
-  */
-
-/** @defgroup System System
-  * @brief System management
-  * @{
-  */
-
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
 #define EEPROM_Latency_0            ((uint32_t)0x00000000)  /*!< Up to  25 MHz*/
@@ -47,10 +38,6 @@ static uint32_t getLastProgramAddress(uint32_t start_page);
 static uint32_t crc32(uint8_t *buf, uint32_t len);
 
 /* Exported functions --------------------------------------------------------*/
-/** @defgroup System_Exported_Functions System Exported Functions
-  * @{
-  */
-
 /**
  * @brief Reset the clock configuration to the default state
  */
@@ -185,10 +172,6 @@ uint32_t SYS_ChecksumVerify(uint32_t start_address)
     return flash_checksum == checksum ? checksum : 0;
 }
 
-/**
-  * @}
-  */
-
 /* Private functions ---------------------------------------------------------*/
 static uint32_t getLastProgramAddress(uint32_t start_page)
 {
@@ -230,17 +213,20 @@ static uint32_t getLastProgramAddress(uint32_t start_page)
     return found_address;
 }
 
-/*
-  Name  : CRC-32
-  Poly  : 0x04C11DB7    x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11
-                       + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
-  Init  : 0xFFFFFFFF
-  Revert: true
-  XorOut: 0xFFFFFFFF
-  Check : 0xCBF43926 ("123456789")
-  MaxLen: 268 435 455 bytes (2 147 483 647 bits)
-*/
-static uint32_t crc32(uint8_t *buf, uint32_t len)
+/**
+ * @brief Name: CRC-32
+ *      Poly  : 0x04C11DB7    x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11
+ *                            + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
+ *      Init  : 0xFFFFFFFF
+ *      Revert: true
+ *      XorOut: 0xFFFFFFFF
+ *      Check : 0xCBF43926 ("123456789")
+ *      MaxLen: 268 435 455 bytes (2 147 483 647 bits)
+ * @param  data for calculating
+ * @param  len of data
+ * @retval CRC-32 checksum byte
+ */
+static uint32_t crc32(uint8_t *data, uint32_t len)
 {
     const int CRC_TABLE_SIZE = 256;
     uint32_t crc_table[CRC_TABLE_SIZE];
@@ -259,16 +245,9 @@ static uint32_t crc32(uint8_t *buf, uint32_t len)
     crc = 0xFFFFFFFFU;
 
     while (len--)
-        crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
+        crc = crc_table[(crc ^ *data++) & 0xFF] ^ (crc >> 8);
 
     return crc ^ 0xFFFFFFFFU;
 }
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 /***************************** END OF FILE ************************************/
