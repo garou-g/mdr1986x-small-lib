@@ -37,11 +37,19 @@ typedef enum SYS_Freq_Enum
 
 } SYS_Freq_Type;
 
+typedef enum SYS_FreqSrc_Enum
+{
+    SYS_FreqSrc_Crystal,
+    SYS_FreqSrc_Oscillator
+
+} SYS_FreqSrc_Type;
+
 typedef enum SYS_State_Enum
 {
     SYS_State_Unknown,
     SYS_State_Reset,
     SYS_State_Ready,
+    SYS_State_Err_Param,
     SYS_State_Err_HSE,
     SYS_State_Err_PLL,
     SYS_State_Err_CHKSUM
@@ -49,15 +57,14 @@ typedef enum SYS_State_Enum
 } SYS_State_Type;
 
 /* Exported constants --------------------------------------------------------*/
-#define SYS_HSE_DIV                 ((uint32_t)1)
-#define SYS_HSE_FREQ                ((uint32_t)8000000)
+#define SYS_HSI_FREQ                ((uint32_t)8000000)
 #define SYS_1MHZ_FREQ               ((uint32_t)1000000)
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
 /* System and clock configuration functions */
 void SYS_DeInit(void);
-void SYS_ClkInit(SYS_Freq_Type freq);
+void SYS_ClkInit(SYS_Freq_Type freq, SYS_Freq_Type hse_freq, SYS_FreqSrc_Type src);
 
 SYS_State_Type SYS_State(void);
 uint32_t SYS_ChecksumVerify(uint32_t start_address);

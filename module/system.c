@@ -2,11 +2,12 @@
  * @file    system.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   System management
- * @version 0.3
- * @date    2019-06-01
+ * @version 0.4
+ * @date    2019-07-03
  *
  * @note
  * Changelog:
+ * v0.4 Added HSE and clock source type parameters in SYS_ClkInit.
  * v0.3 Added calculating of first memory page by start_address parameter.
  *     Added defines for two types of cpu: MDR1986VE1T and MDR1986VE9X.
  * v0.2 Added crc32 calculate functions.
@@ -67,10 +68,10 @@ void SYS_DeInit(void)
  *              transfer for HCLK. In other way clocks roll back for HSE/HSI
  *              frequency only (and signalize about error).
  */
-void SYS_ClkInit(SYS_Freq_Type freq)
+void SYS_ClkInit(SYS_Freq_Type freq, SYS_Freq_Type hse_freq, SYS_FreqSrc_Type src)
 {
     uint32_t timeout, flag;
-    uint32_t cpu_c1, cpu_hclk;
+    uint32_t hs_control, pll_div, cpu_c1, cpu_hclk;
 
     sys_state = SYS_State_Ready;
 
@@ -78,6 +79,12 @@ void SYS_ClkInit(SYS_Freq_Type freq)
     MDR_RST_CLK->PER_CLOCK |= RST_CLK_PER_CLOCK_PCLK_EN_RST_CLK |
                                 RST_CLK_PER_CLOCK_PCLK_EN_EEPROM_CNTRL |
                                 RST_CLK_PER_CLOCK_PCLK_EN_BKP;
+
+    if (hse_freq > freq)
+    {
+        sys_state = SYS_State_Err_Param;
+        return;
+    }
 
     /* Choose EEPROM latency */
     if (freq < SYS_Freq_32Mhz)
@@ -94,7 +101,12 @@ void SYS_ClkInit(SYS_Freq_Type freq)
         MDR_EEPROM->CMD = EEPROM_Latency_5;
 
     /* Enable HSE and wait for stabilization */
-    MDR_RST_CLK->HS_CONTROL = RST_CLK_HS_CONTROL_HSE_ON;
+    if (src == SYS_FreqSrc_Oscillator)
+        hs_control = RST_CLK_HS_CONTROL_HSE_ON | RST_CLK_HS_CONTROL_HSE_BYP;
+    else
+        hs_control = RST_CLK_HS_CONTROL_HSE_ON;
+    MDR_RST_CLK->HS_CONTROL = hs_control;
+
     timeout = flag = 0;
     while (timeout < SYS_INIT_TIMEOUT && flag != RST_CLK_CLOCK_STATUS_HSE_RDY)
     {
@@ -105,12 +117,21 @@ void SYS_ClkInit(SYS_Freq_Type freq)
     if (flag == 0)  /* HSE fails -> set CPU_C1 from internal HSI */
     {
         cpu_c1 = RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSI;
+        pll_div = SYS_HSI_FREQ;
         sys_state = SYS_State_Err_HSE;
     }
     else            /* HSE success -> set CPU_C1 from HSE */
     {
-        cpu_c1 = SYS_HSE_DIV == 1 ? RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSE :
-                                    RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSE_DIV_2;
+        if (hse_freq > SYS_Freq_16Mhz)
+        {
+            cpu_c1 = RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSE_DIV_2;
+            pll_div = hse_freq >> 1;
+        }
+        else
+        {
+            cpu_c1 = RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSE;
+            pll_div = hse_freq;
+        }
     }
 
     /* Set CPU_C1 from choosen source */
@@ -122,7 +143,7 @@ void SYS_ClkInit(SYS_Freq_Type freq)
 
     /* Start PLL and switch HCLK to it */
     MDR_RST_CLK->PLL_CONTROL = RST_CLK_PLL_CONTROL_PLL_CPU_ON |
-        ((freq / SYS_HSE_FREQ) - 1) << RST_CLK_PLL_CONTROL_PLL_CPU_MUL_Pos;
+        ((freq / pll_div) - 1) << RST_CLK_PLL_CONTROL_PLL_CPU_MUL_Pos;
     timeout = flag = 0;
     while (timeout < SYS_INIT_TIMEOUT && flag != RST_CLK_CLOCK_STATUS_PLL_CPU_RDY)
     {
