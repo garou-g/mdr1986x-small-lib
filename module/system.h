@@ -18,6 +18,9 @@
 /* Exported types ------------------------------------------------------------*/
 typedef enum SYS_Freq_Enum
 {
+    SYS_Freq_1Mhz       = 1000000,
+    SYS_Freq_2Mhz       = 2000000,
+    SYS_Freq_4Mhz       = 4000000,
     SYS_Freq_8Mhz       = 8000000,
     SYS_Freq_16Mhz      = 16000000,
     SYS_Freq_24Mhz      = 24000000,
@@ -33,7 +36,9 @@ typedef enum SYS_Freq_Enum
     SYS_Freq_104Mhz     = 104000000,
     SYS_Freq_112Mhz     = 112000000,
     SYS_Freq_120Mhz     = 120000000,
-    SYS_Freq_128Mhz     = 128000000
+    SYS_Freq_128Mhz     = 128000000,
+    SYS_Freq_136Mhz     = 136000000,
+    SYS_Freq_144Mhz     = 144000000
 
 } SYS_Freq_Type;
 
@@ -58,7 +63,6 @@ typedef enum SYS_State_Enum
 
 /* Exported constants --------------------------------------------------------*/
 #define SYS_HSI_FREQ                ((uint32_t)8000000)
-#define SYS_1MHZ_FREQ               ((uint32_t)1000000)
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/

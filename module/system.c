@@ -8,8 +8,9 @@
  * @note
  * Changelog:
  * v0.4 Added HSE and clock source type parameters in SYS_ClkInit.
+ *      Added some frequency values in SYS_Freq_Enum.
  * v0.3 Added calculating of first memory page by start_address parameter.
- *     Added defines for two types of cpu: MDR1986VE1T and MDR1986VE9X.
+ *      Added defines for two types of cpu: MDR1986VE1T and MDR1986VE9X.
  * v0.2 Added crc32 calculate functions.
  * v0.1 First release. Deinit and clock init functions with state control.
  ******************************************************************************/
@@ -80,6 +81,7 @@ void SYS_ClkInit(SYS_Freq_Type freq, SYS_Freq_Type hse_freq, SYS_FreqSrc_Type sr
                                 RST_CLK_PER_CLOCK_PCLK_EN_EEPROM_CNTRL |
                                 RST_CLK_PER_CLOCK_PCLK_EN_BKP;
 
+    /* Check HSE frequency value. It can't be bigger than target frequency */
     if (hse_freq > freq)
     {
         sys_state = SYS_State_Err_Param;
@@ -100,7 +102,7 @@ void SYS_ClkInit(SYS_Freq_Type freq, SYS_Freq_Type hse_freq, SYS_FreqSrc_Type sr
     else
         MDR_EEPROM->CMD = EEPROM_Latency_5;
 
-    /* Enable HSE and wait for stabilization */
+    /* Enable HSE and wait for stabilization. Check type of clock source */
     if (src == SYS_FreqSrc_Oscillator)
         hs_control = RST_CLK_HS_CONTROL_HSE_ON | RST_CLK_HS_CONTROL_HSE_BYP;
     else
@@ -122,6 +124,7 @@ void SYS_ClkInit(SYS_Freq_Type freq, SYS_Freq_Type hse_freq, SYS_FreqSrc_Type sr
     }
     else            /* HSE success -> set CPU_C1 from HSE */
     {
+        /* Choose HSE divider and prepare PLL divider value based on HSE */
         if (hse_freq > SYS_Freq_16Mhz)
         {
             cpu_c1 = RST_CLK_CPU_CLOCK_CPU_C1_SEL_HSE_DIV_2;
