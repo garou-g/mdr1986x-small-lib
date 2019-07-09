@@ -54,6 +54,7 @@ typedef union
 /* Exported functions --------------------------------------------------------*/
 EXCH_MsgTypedef EXCH_PrepareMsg(uint8_t cmd, const uint8_t *data, uint8_t len);
 uint8_t EXCH_Crc8(const uint8_t *data, uint8_t len);
+uint16_t EXCH_Crc16(const uint8_t *data, uint16_t len);
 
 #ifdef __cplusplus
 }
