@@ -22,20 +22,20 @@
  */
 typedef struct
 {
-    int32_t* data;                  /*!< Pointer to queue data array          */
-    int32_t length;                 /*!< Length of queue data array           */
-    int32_t first;                  /*!< Index of first queue item            */
-    int32_t last;                   /*!< Index of last queue item             */
-    int32_t size;                   /*!< Current count of queue data          */
+    uint8_t* data;                  /*!< Pointer to queue data array          */
+    uint32_t length;                /*!< Length of queue data array           */
+    uint8_t first;                  /*!< Index of first queue item            */
+    uint8_t last;                   /*!< Index of last queue item             */
+    uint8_t size;                   /*!< Current count of queue data          */
 
 } QueueTypedef;
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void QUEUE_Init(QueueTypedef *queue, int32_t *buf, uint32_t length);
-int32_t QUEUE_IsFull(const QueueTypedef* queue);
-int32_t QUEUE_IsEmpty(const QueueTypedef* queue);
-void QUEUE_Enqueue(QueueTypedef* queue, int32_t item);
+void QUEUE_Init(QueueTypedef *queue, uint8_t *buf, uint32_t length);
+uint8_t QUEUE_IsFull(const QueueTypedef* queue);
+uint8_t QUEUE_IsEmpty(const QueueTypedef* queue);
+void QUEUE_Enqueue(QueueTypedef* queue, uint8_t item);
 int32_t QUEUE_Dequeue(QueueTypedef* queue);
 int32_t QUEUE_First(const QueueTypedef* queue);
 int32_t QUEUE_Last(const QueueTypedef* queue);

@@ -9,12 +9,13 @@
  * Simple queue representation with external buffer definition.
  *
  * Changelog:
+ * v0.2 Change type of data to uint8_t except of return values, because
+ *      functions returns -1 when queue has no data.
  * v0.1 First release.
  ******************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
 #include "simple_queue.h"
-#include <limits.h>
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
@@ -22,7 +23,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void QUEUE_Init(QueueTypedef *queue, int32_t *buf, uint32_t length)
+void QUEUE_Init(QueueTypedef *queue, uint8_t *buf, uint32_t length)
 {
     queue->data = buf;
     queue->length = length;
@@ -31,17 +32,17 @@ void QUEUE_Init(QueueTypedef *queue, int32_t *buf, uint32_t length)
     queue->size  = 0;
 }
 
-int32_t QUEUE_IsFull(const QueueTypedef* queue)
+uint8_t QUEUE_IsFull(const QueueTypedef* queue)
 {
     return (queue->size == queue->length);
 }
 
-int32_t QUEUE_IsEmpty(const QueueTypedef* queue)
+uint8_t QUEUE_IsEmpty(const QueueTypedef* queue)
 {
     return (queue->size == 0);
 }
 
-void QUEUE_Enqueue(QueueTypedef* queue, int32_t item)
+void QUEUE_Enqueue(QueueTypedef* queue, uint8_t item)
 {
     if (QUEUE_IsFull(queue))
         return;
@@ -54,7 +55,7 @@ void QUEUE_Enqueue(QueueTypedef* queue, int32_t item)
 int32_t QUEUE_Dequeue(QueueTypedef* queue)
 {
     if (QUEUE_IsEmpty(queue))
-        return INT_MIN;
+        return -1;
 
     int item = queue->data[queue->first];
     queue->first = (queue->first + 1) % queue->length;
@@ -65,7 +66,7 @@ int32_t QUEUE_Dequeue(QueueTypedef* queue)
 int32_t QUEUE_First(const QueueTypedef* queue)
 {
     if (QUEUE_IsEmpty(queue))
-        return INT_MIN;
+        return -1;
 
     return queue->data[queue->first];
 }
@@ -73,7 +74,7 @@ int32_t QUEUE_First(const QueueTypedef* queue)
 int32_t QUEUE_Last(const QueueTypedef* queue)
 {
     if (QUEUE_IsEmpty(queue))
-        return INT_MIN;
+        return -1;
 
     return queue->data[queue->last];
 }
