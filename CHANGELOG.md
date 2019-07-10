@@ -4,6 +4,7 @@ mdr1986x-small-lib changelog
 ## [Unreleased]
 ### Added
 - Using of malloc to allocate memory for queue buffer
+- Using of malloc to allocate memory for message buffer
 - Init function for set up callbacks and inner buffer and dispatcher function
 for proccess message and callbacks for byte write, read and message parse
 in simple_exchange

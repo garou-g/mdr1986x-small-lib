@@ -16,6 +16,7 @@
  *      Changed message structure.
  *      Deleted EXCH_PrepareMsg function as obsolete.
  *      Deleted EXCH_Crc8 function as obsolete.
+ *      Added using of malloc to allocate memory for message buffer.
  * v0.3 Added function for calculating crc16 checksum.
  * v0.2 Added function for prepare message structure to transmit.
  * v0.1 First release. Function for calculating crc8 checksum.
@@ -23,6 +24,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "simple_exchange.h"
+#include <stdlib.h>
 
 /* Private typedef -----------------------------------------------------------*/
 typedef enum
@@ -74,8 +76,8 @@ static const uint16_t CRC16_TABLE[256] = {
     0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
-static EXCH_InitTypedef exch = {0};
 static EXCH_StateTypedef state = EXCH_State_Idle;
+static EXCH_InitTypedef exch = {0};
 static EXCH_MsgTypedef msg = {0};
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,7 +85,7 @@ static EXCH_MsgTypedef msg = {0};
 void EXCH_Init(const EXCH_InitTypedef *exch_init)
 {
     exch = *exch_init;
-    msg.data = exch.buf;
+    msg.data = malloc(exch.size);
 }
 
 void EXCH_Dispatcher()

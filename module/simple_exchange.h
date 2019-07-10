@@ -36,8 +36,7 @@ typedef struct
     void                (*write_function)(uint8_t);
     int                 (*read_function)();
     void                (*parse_function)(EXCH_MsgTypedef*);
-    uint8_t             *buf;
-    uint32_t            length;
+    uint32_t            size;
 
 } EXCH_InitTypedef;
 
