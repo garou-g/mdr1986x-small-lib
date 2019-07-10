@@ -46,7 +46,6 @@ typedef struct
 void EXCH_Init(const EXCH_InitTypedef *exch_init);
 void EXCH_Dispatcher();
 
-uint8_t EXCH_Crc8(const uint8_t *data, uint8_t len);
 uint16_t EXCH_Crc16(const uint8_t *data, uint16_t len);
 
 #ifdef __cplusplus

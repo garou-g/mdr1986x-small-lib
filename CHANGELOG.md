@@ -18,6 +18,7 @@ functions returns -1 when queue has no data
 
 ### Deleted
 - EXCH_PrepareMsg function as obsolete in simple_exchange
+- EXCH_Crc8 function as obsolete in simple_exchange
 
 ## [0.2] - 2019-07-09
 ### Added
