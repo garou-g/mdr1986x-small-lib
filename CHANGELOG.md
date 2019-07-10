@@ -2,6 +2,8 @@
 mdr1986x-small-lib changelog
 
 ## [Unreleased]
+### Fixed
+- Using of incorrect function names in queue module
 
 ## [0.2] - 2019-07-09
 ### Added

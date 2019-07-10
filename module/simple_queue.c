@@ -43,7 +43,7 @@ int32_t QUEUE_IsEmpty(const QueueTypedef* queue)
 
 void QUEUE_Enqueue(QueueTypedef* queue, int32_t item)
 {
-    if (isFull(queue))
+    if (QUEUE_IsFull(queue))
         return;
 
     queue->last = (queue->last + 1) % queue->length;
@@ -53,7 +53,7 @@ void QUEUE_Enqueue(QueueTypedef* queue, int32_t item)
 
 int32_t QUEUE_Dequeue(QueueTypedef* queue)
 {
-    if (isEmpty(queue))
+    if (QUEUE_IsEmpty(queue))
         return INT_MIN;
 
     int item = queue->data[queue->first];
@@ -64,7 +64,7 @@ int32_t QUEUE_Dequeue(QueueTypedef* queue)
 
 int32_t QUEUE_First(const QueueTypedef* queue)
 {
-    if (isEmpty(queue))
+    if (QUEUE_IsEmpty(queue))
         return INT_MIN;
 
     return queue->data[queue->first];
@@ -72,7 +72,7 @@ int32_t QUEUE_First(const QueueTypedef* queue)
 
 int32_t QUEUE_Last(const QueueTypedef* queue)
 {
-    if (isEmpty(queue))
+    if (QUEUE_IsEmpty(queue))
         return INT_MIN;
 
     return queue->data[queue->last];
