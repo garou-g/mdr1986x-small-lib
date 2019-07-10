@@ -4,13 +4,20 @@ mdr1986x-small-lib changelog
 ## [Unreleased]
 ### Added
 - Using of malloc to allocate memory for queue buffer
+- Init function for set up callbacks and inner buffer and dispatcher function
+for proccess message and callbacks for byte write, read and message parse
+in simple_exchange
 
 ### Fixed
 - Using of incorrect function names in queue module
 
 ### Changed
 - Type of data in queue module to uint8_t except of return values, because
-functions returns -1 when queue has no data.
+functions returns -1 when queue has no data
+- Changed message structure in simple_exchange
+
+### Deleted
+- EXCH_PrepareMsg function as obsolete in simple_exchange
 
 ## [0.2] - 2019-07-09
 ### Added

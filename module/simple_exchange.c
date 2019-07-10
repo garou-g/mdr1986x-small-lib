@@ -2,14 +2,19 @@
  * @file    simple_exchange.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   Simple serial exchange protocol
- * @version 0.3
- * @date    2019-07-09
+ * @version 0.4
+ * @date    2019-07-10
  *
  * @note
  * Exchange uses fixed size messages with start and end markers. It has
  * one byte for commands and array for data bytes.
  *
  * Changelog:
+ * v0.4 Added init function for set up callbacks and inner buffer.
+ *      Added dispatcher function for proccess message and callbacks
+ *      for byte write, read and message parse.
+ *      Changed message structure.
+ *      Deleted EXCH_PrepareMsg function as obsolete.
  * v0.3 Added function for calculating crc16 checksum.
  * v0.2 Added function for prepare message structure to transmit.
  * v0.1 First release. Function for calculating crc8 checksum.
@@ -19,6 +24,17 @@
 #include "simple_exchange.h"
 
 /* Private typedef -----------------------------------------------------------*/
+typedef enum
+{
+    EXCH_State_Idle,
+    EXCH_State_Start,
+    EXCH_State_Cmd,
+    EXCH_State_Len,
+    EXCH_State_Data,
+    EXCH_State_Crc
+
+} EXCH_StateTypedef;
+
 /* Private defines -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -92,26 +108,69 @@ static const uint16_t CRC16_TABLE[256] = {
     0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
+static EXCH_InitTypedef exch = {0};
+static EXCH_StateTypedef state = EXCH_State_Idle;
+static EXCH_MsgTypedef msg = {0};
+
 /* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-
-EXCH_MsgTypedef EXCH_PrepareMsg(uint8_t cmd, const uint8_t *data, uint8_t len)
+void EXCH_Init(const EXCH_InitTypedef *exch_init)
 {
-    int i;
-    EXCH_MsgTypedef msg = {0};
+    exch = *exch_init;
+    msg.data = exch.buf;
+}
 
-    if (len > EXCH_DATA_LENGTH)
-        len = EXCH_DATA_LENGTH;
+void EXCH_Dispatcher()
+{
+    static uint32_t cnt = 0, crc_cnt = 0;
+    uint16_t crc;
+    int32_t byte;
 
-    msg.fields.start = EXCH_MSG_START;
-    msg.fields.cmd = cmd;
-    for (i = 0; i < len; i++)
-        msg.fields.data[i] = data[i];
+    byte = exch.read_function();
+    if (byte == -1)
+        return;
 
-    msg.fields.crc = EXCH_Crc8(data, len);
-    msg.fields.end = EXCH_MSG_END;
-
-    return msg;
+    switch (state)
+    {
+        case EXCH_State_Idle:
+            if (byte == EXCH_SOH)
+            {
+                msg.cmd = msg.length = msg.crc = 0;
+                cnt = crc_cnt = 0;
+                state = EXCH_State_Cmd;
+            }
+            break;
+        case EXCH_State_Cmd:
+            msg.cmd = byte;
+            state = EXCH_State_Len;
+            break;
+        case EXCH_State_Len:
+            msg.length = byte;
+            state = EXCH_State_Data;
+            break;
+        case EXCH_State_Data:
+            msg.data[cnt++] = byte;
+            if (cnt == msg.length)
+                state = EXCH_State_Crc;
+            break;
+        case EXCH_State_Crc:
+            if (crc_cnt == 0)
+            {
+                msg.crc = byte & 0xFF;
+                crc_cnt++;
+            }
+            else if (crc_cnt == 1)
+            {
+                msg.crc |= (byte & 0xFF) << 8;
+                crc = EXCH_Crc16(msg.data, msg.length);
+                if (crc == msg.crc)
+                    exch.parse_function(&msg);
+                state = EXCH_State_Idle;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 /**
