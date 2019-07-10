@@ -2,13 +2,14 @@
  * @file    simple_exchange.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   Simple queue realization
- * @version 0.1
- * @date    2019-07-09
+ * @version 0.3
+ * @date    2019-07-10
  *
  * @note
  * Simple queue representation with external buffer definition.
  *
  * Changelog:
+ * v0.3 Added using of malloc to allocate memory for queue buffer.
  * v0.2 Change type of data to uint8_t except of return values, because
  *      functions returns -1 when queue has no data.
  * v0.1 First release.
@@ -16,6 +17,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "simple_queue.h"
+#include <stdlib.h>
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private defines -----------------------------------------------------------*/
@@ -23,12 +25,12 @@
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void QUEUE_Init(QueueTypedef *queue, uint8_t *buf, uint32_t length)
+void QUEUE_Init(QueueTypedef *queue, uint32_t size)
 {
-    queue->data = buf;
-    queue->length = length;
+    queue->data = malloc(size);
+    queue->length = size;
     queue->first = 0;
-    queue->last  = length - 1;
+    queue->last  = size - 1;
     queue->size  = 0;
 }
 

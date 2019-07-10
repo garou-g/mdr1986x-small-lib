@@ -32,7 +32,7 @@ typedef struct
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void QUEUE_Init(QueueTypedef *queue, uint8_t *buf, uint32_t length);
+void QUEUE_Init(QueueTypedef *queue, uint32_t size);
 uint8_t QUEUE_IsFull(const QueueTypedef* queue);
 uint8_t QUEUE_IsEmpty(const QueueTypedef* queue);
 void QUEUE_Enqueue(QueueTypedef* queue, uint8_t item);

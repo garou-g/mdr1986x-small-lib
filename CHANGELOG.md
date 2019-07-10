@@ -2,8 +2,12 @@
 mdr1986x-small-lib changelog
 
 ## [Unreleased]
+### Added
+- Using of malloc to allocate memory for queue buffer
+
 ### Fixed
 - Using of incorrect function names in queue module
+
 ### Changed
 - Type of data in queue module to uint8_t except of return values, because
 functions returns -1 when queue has no data.
