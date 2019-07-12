@@ -17,8 +17,17 @@
 
 /* Exported constants --------------------------------------------------------*/
 #define EXCH_SOH                    0x01    /*!< Message start of header flag */
+#define EXCH_ACK                    0x06    /*!< Acknowledge command          */
+#define EXCH_NAK                    0x15    /*!< Not acknowledge command      */
 
 /* Exported types ------------------------------------------------------------*/
+typedef enum
+{
+    EXCH_Ack_Ok,
+    EXCH_Ack_Error
+
+} EXCH_AckTypedef;
+
 /**
  * @brief Exchange message structure definition
  */
@@ -36,6 +45,7 @@ typedef struct
     void                (*write_function)(uint8_t);
     int                 (*read_function)();
     void                (*parse_function)(EXCH_MsgTypedef*);
+    void                (*ack_function)(EXCH_AckTypedef);
     uint32_t            size;
 
 } EXCH_InitTypedef;

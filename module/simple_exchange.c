@@ -11,6 +11,7 @@
  *
  * Changelog:
  * v0.5 Added EXCH_Write function for send messages.
+ *      Added acknowledge callback and parsing of acknowledge bytes.
  * v0.4 Added init function for set up callbacks and inner buffer.
  *      Added dispatcher function for proccess message and callbacks
  *      for byte write, read and message parse.
@@ -124,11 +125,21 @@ void EXCH_Dispatcher()
     switch (state)
     {
         case EXCH_State_Idle:
-            if (byte == EXCH_SOH)
+            switch (byte)
             {
-                msg.cmd = msg.length = msg.crc = 0;
-                cnt = crc_cnt = 0;
-                state = EXCH_State_Cmd;
+                case EXCH_SOH:
+                    msg.cmd = msg.length = msg.crc = 0;
+                    cnt = crc_cnt = 0;
+                    state = EXCH_State_Cmd;
+                    break;
+                case EXCH_ACK:
+                    exch.ack_function(EXCH_Ack_Ok);
+                    break;
+                case EXCH_NAK:
+                    exch.ack_function(EXCH_Ack_Error);
+                    break;
+                default:
+                    break;
             }
             break;
         case EXCH_State_Cmd:
