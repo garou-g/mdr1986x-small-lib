@@ -43,6 +43,7 @@ typedef struct
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
 void EXCH_Init(const EXCH_InitTypedef *exch_init);
+void EXCH_Write(uint8_t cmd, const uint8_t *data, uint32_t length);
 void EXCH_Dispatcher();
 
 uint16_t EXCH_Crc16(const uint8_t *data, uint16_t len);

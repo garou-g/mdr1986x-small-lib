@@ -2,14 +2,15 @@
  * @file    simple_exchange.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   Simple serial exchange protocol
- * @version 0.4
- * @date    2019-07-10
+ * @version 0.5
+ * @date    2019-07-12
  *
  * @note
  * Exchange uses fixed size messages with start and end markers. It has
  * one byte for commands and array for data bytes.
  *
  * Changelog:
+ * v0.5 Added EXCH_Write function for send messages.
  * v0.4 Added init function for set up callbacks and inner buffer.
  *      Added dispatcher function for proccess message and callbacks
  *      for byte write, read and message parse.
@@ -86,6 +87,28 @@ void EXCH_Init(const EXCH_InitTypedef *exch_init)
 {
     exch = *exch_init;
     msg.data = malloc(exch.size);
+}
+
+void EXCH_Write(uint8_t cmd, const uint8_t *data, uint32_t length)
+{
+    uint16_t crc;
+    uint32_t i;
+
+    /* Check data length and limit it by maximum message size */
+    if (length > exch.size)
+        length = exch.size;
+
+    /* Prepare checksum before exchange start */
+    crc = EXCH_Crc16(data, length);
+
+    /* Send frame with all service data */
+    exch.write_function(EXCH_SOH);
+    exch.write_function(cmd);
+    exch.write_function(length);
+    for (i = 0; i < length; ++i)
+        exch.write_function(data[i]);
+    exch.write_function(crc & 0xFF);
+    exch.write_function((crc >> 8) & 0xFF);
 }
 
 void EXCH_Dispatcher()
