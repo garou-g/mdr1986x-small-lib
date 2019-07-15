@@ -10,6 +10,7 @@ for proccess message and callbacks for byte write, read and message parse
 in simple_exchange
 - EXCH_Write function for send messages in simple_exchange
 - Acknowledge callback and parsing of acknowledge bytes in simple_exchange
+- Acknowledge and not acknowledge send functions in simple_exchange
 
 ### Fixed
 - Using of incorrect function names in queue module

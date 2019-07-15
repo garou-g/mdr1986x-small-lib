@@ -12,6 +12,7 @@
  * Changelog:
  * v0.5 Added EXCH_Write function for send messages.
  *      Added acknowledge callback and parsing of acknowledge bytes.
+ *      Added acknowledge and not acknowledge send functions.
  * v0.4 Added init function for set up callbacks and inner buffer.
  *      Added dispatcher function for proccess message and callbacks
  *      for byte write, read and message parse.
@@ -112,6 +113,16 @@ void EXCH_Write(uint8_t cmd, const uint8_t *data, uint32_t length)
     exch.write_function((crc >> 8) & 0xFF);
 }
 
+void EXCH_Ack()
+{
+    exch.write_function(EXCH_ACK);
+}
+
+void EXCH_Nak()
+{
+    exch.write_function(EXCH_NAK);
+}
+
 void EXCH_Dispatcher()
 {
     static uint32_t cnt = 0, crc_cnt = 0;
@@ -166,7 +177,14 @@ void EXCH_Dispatcher()
                 msg.crc |= (byte & 0xFF) << 8;
                 crc = EXCH_Crc16(msg.data, msg.length);
                 if (crc == msg.crc)
+                {
                     exch.parse_function(&msg);
+                    EXCH_Ack();
+                }
+                else
+                {
+                    EXCH_Nak();
+                }
                 state = EXCH_State_Idle;
             }
             break;
