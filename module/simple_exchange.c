@@ -2,14 +2,17 @@
  * @file    simple_exchange.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   Simple serial exchange protocol
- * @version 0.5
- * @date    2019-07-12
+ * @version 0.6
+ * @date    2019-07-15
  *
  * @note
  * Exchange uses fixed size messages with start and end markers. It has
  * one byte for commands and array for data bytes.
  *
  * Changelog:
+ * v0.6 Changed behavior of module: all inner variables moved into
+ *      EXCH_InstTypedef. It allows to create multiply instances of module
+ *      with different physical layers.
  * v0.5 Added EXCH_Write function for send messages.
  *      Added acknowledge callback and parsing of acknowledge bytes.
  *      Added acknowledge and not acknowledge send functions.
@@ -30,19 +33,14 @@
 #include <stdlib.h>
 
 /* Private typedef -----------------------------------------------------------*/
-typedef enum
-{
-    EXCH_State_Idle,
-    EXCH_State_Start,
-    EXCH_State_Cmd,
-    EXCH_State_Len,
-    EXCH_State_Data,
-    EXCH_State_Crc
-
-} EXCH_StateTypedef;
-
 /* Private defines -----------------------------------------------------------*/
 /* Private macros ------------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+static void dummy_write(uint8_t d) {}
+static int dummy_read() { return -1; }
+static void dummy_parse(EXCH_MsgTypedef* d) {}
+static void dummy_ack(EXCH_AckTypedef d) {}
+
 /* Private variables ---------------------------------------------------------*/
 static const uint16_t CRC16_TABLE[256] = {
     0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50A5, 0x60C6, 0x70E7,
@@ -79,113 +77,119 @@ static const uint16_t CRC16_TABLE[256] = {
     0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
 
-static EXCH_StateTypedef state = EXCH_State_Idle;
-static EXCH_InitTypedef exch = {0};
-static EXCH_MsgTypedef msg = {0};
+// static EXCH_StateTypedef state = EXCH_State_Idle;
 
-/* Private function prototypes -----------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void EXCH_Init(const EXCH_InitTypedef *exch_init)
+void EXCH_Init(EXCH_InstTypedef *exch, uint32_t size)
 {
-    exch = *exch_init;
-    msg.data = malloc(exch.size);
+    exch->write_function = dummy_write;
+    exch->read_function = dummy_read;
+    exch->parse_function = dummy_parse;
+    exch->ack_function = dummy_ack;
+    exch->msg = malloc(sizeof(EXCH_MsgTypedef));
+    exch->msg->data = malloc(size);
+    exch->msg_size = size;
+    exch->state = EXCH_State_Idle;
 }
 
-void EXCH_Write(uint8_t cmd, const uint8_t *data, uint32_t length)
+void EXCH_Write(EXCH_InstTypedef *exch,
+                uint8_t cmd, const uint8_t *data, uint32_t length)
 {
     uint16_t crc;
     uint32_t i;
 
     /* Check data length and limit it by maximum message size */
-    if (length > exch.size)
-        length = exch.size;
+    if (length > exch->msg_size)
+        length = exch->msg_size;
 
     /* Prepare checksum before exchange start */
     crc = EXCH_Crc16(data, length);
 
     /* Send frame with all service data */
-    exch.write_function(EXCH_SOH);
-    exch.write_function(cmd);
-    exch.write_function(length);
+    exch->write_function(EXCH_SOH);
+    exch->write_function(cmd);
+    exch->write_function(length);
     for (i = 0; i < length; ++i)
-        exch.write_function(data[i]);
-    exch.write_function(crc & 0xFF);
-    exch.write_function((crc >> 8) & 0xFF);
+        exch->write_function(data[i]);
+    exch->write_function((crc >> 8) & 0xFF);
+    exch->write_function(crc & 0xFF);
 }
 
-void EXCH_Ack()
+void EXCH_Ack(const EXCH_InstTypedef *exch)
 {
-    exch.write_function(EXCH_ACK);
+    exch->write_function(EXCH_ACK);
 }
 
-void EXCH_Nak()
+void EXCH_Nak(const EXCH_InstTypedef *exch)
 {
-    exch.write_function(EXCH_NAK);
+    exch->write_function(EXCH_NAK);
 }
 
-void EXCH_Dispatcher()
+void EXCH_Dispatcher(EXCH_InstTypedef *exch)
 {
     static uint32_t cnt = 0, crc_cnt = 0;
     uint16_t crc;
     int32_t byte;
+    EXCH_MsgTypedef *msg;
 
-    byte = exch.read_function();
+    byte = exch->read_function();
     if (byte == -1)
         return;
 
-    switch (state)
+    msg = exch->msg;
+    switch (exch->state)
     {
         case EXCH_State_Idle:
             switch (byte)
             {
                 case EXCH_SOH:
-                    msg.cmd = msg.length = msg.crc = 0;
+                    msg->cmd = msg->length = msg->crc = 0;
                     cnt = crc_cnt = 0;
-                    state = EXCH_State_Cmd;
+                    exch->state = EXCH_State_Cmd;
                     break;
                 case EXCH_ACK:
-                    exch.ack_function(EXCH_Ack_Ok);
+                    exch->ack_function(EXCH_Ack_Ok);
                     break;
                 case EXCH_NAK:
-                    exch.ack_function(EXCH_Ack_Error);
+                    exch->ack_function(EXCH_Ack_Error);
                     break;
                 default:
                     break;
             }
             break;
         case EXCH_State_Cmd:
-            msg.cmd = byte;
-            state = EXCH_State_Len;
+            msg->cmd = byte;
+            exch->state = EXCH_State_Len;
             break;
         case EXCH_State_Len:
-            msg.length = byte;
-            state = EXCH_State_Data;
+            msg->length = byte;
+            exch->state = EXCH_State_Data;
             break;
         case EXCH_State_Data:
-            msg.data[cnt++] = byte;
-            if (cnt == msg.length)
-                state = EXCH_State_Crc;
+            msg->data[cnt++] = byte;
+            if (cnt == msg->length)
+                exch->state = EXCH_State_Crc;
             break;
         case EXCH_State_Crc:
             if (crc_cnt == 0)
             {
-                msg.crc = byte & 0xFF;
+                msg->crc = (byte & 0xFF) << 8;
                 crc_cnt++;
             }
             else if (crc_cnt == 1)
             {
-                msg.crc |= (byte & 0xFF) << 8;
-                crc = EXCH_Crc16(msg.data, msg.length);
-                if (crc == msg.crc)
+                msg->crc |= byte & 0xFF;
+                crc = EXCH_Crc16(msg->data, msg->length);
+                if (crc == msg->crc)
                 {
-                    exch.parse_function(&msg);
-                    EXCH_Ack();
+                    exch->parse_function(msg);
+                    EXCH_Ack(exch);
                 }
                 else
                 {
-                    EXCH_Nak();
+                    EXCH_Nak(exch);
                 }
-                state = EXCH_State_Idle;
+                exch->state = EXCH_State_Idle;
             }
             break;
         default:

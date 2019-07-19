@@ -18,7 +18,8 @@ in simple_exchange
 ### Changed
 - Type of data in queue module to uint8_t except of return values, because
 functions returns -1 when queue has no data
-- Changed message structure in simple_exchange
+- Message structure in simple_exchange
+- Behavior of exchange all inner variables moved into EXCH_InstTypedef
 
 ### Deleted
 - EXCH_PrepareMsg function as obsolete in simple_exchange

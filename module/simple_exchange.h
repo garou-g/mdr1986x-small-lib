@@ -23,6 +23,17 @@
 /* Exported types ------------------------------------------------------------*/
 typedef enum
 {
+    EXCH_State_Idle,
+    EXCH_State_Start,
+    EXCH_State_Cmd,
+    EXCH_State_Len,
+    EXCH_State_Data,
+    EXCH_State_Crc
+
+} EXCH_StateTypedef;
+
+typedef enum
+{
     EXCH_Ack_Ok,
     EXCH_Ack_Error
 
@@ -42,21 +53,27 @@ typedef struct
 
 typedef struct
 {
+    /* Callbacks needs to setup from user code */
     void                (*write_function)(uint8_t);
     int                 (*read_function)();
     void                (*parse_function)(EXCH_MsgTypedef*);
     void                (*ack_function)(EXCH_AckTypedef);
-    uint32_t            size;
 
-} EXCH_InitTypedef;
+    /* Private data of instance structure. Modified only internaly my module */
+    EXCH_MsgTypedef     *msg;
+    uint32_t            msg_size;
+    EXCH_StateTypedef   state;
+
+} EXCH_InstTypedef;
 
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions --------------------------------------------------------*/
-void EXCH_Init(const EXCH_InitTypedef *exch_init);
-void EXCH_Write(uint8_t cmd, const uint8_t *data, uint32_t length);
-void EXCH_Ack();
-void EXCH_Nak();
-void EXCH_Dispatcher();
+void EXCH_Init(EXCH_InstTypedef *exch, uint32_t size);
+void EXCH_Write(EXCH_InstTypedef *exch,
+                uint8_t cmd, const uint8_t *data, uint32_t length);
+void EXCH_Ack(const EXCH_InstTypedef *exch);
+void EXCH_Nak(const EXCH_InstTypedef *exch);
+void EXCH_Dispatcher(EXCH_InstTypedef *exch);
 
 uint16_t EXCH_Crc16(const uint8_t *data, uint16_t len);
 
