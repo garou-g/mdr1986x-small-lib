@@ -128,7 +128,6 @@ void EXCH_Nak(const EXCH_InstTypedef *exch)
 void EXCH_Dispatcher(EXCH_InstTypedef *exch)
 {
     static uint32_t cnt = 0, crc_cnt = 0;
-    uint16_t crc;
     int32_t byte;
     EXCH_MsgTypedef *msg;
 
@@ -179,8 +178,7 @@ void EXCH_Dispatcher(EXCH_InstTypedef *exch)
             else if (crc_cnt == 1)
             {
                 msg->crc |= byte & 0xFF;
-                crc = EXCH_Crc16(msg->data, msg->length);
-                if (crc == msg->crc)
+                if (msg->crc == EXCH_Crc16(msg->data, msg->length))
                 {
                     exch->parse_function(msg);
                     EXCH_Ack(exch);
