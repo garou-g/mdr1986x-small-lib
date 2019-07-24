@@ -20,6 +20,7 @@ in simple_exchange
 functions returns -1 when queue has no data
 - Message structure in simple_exchange
 - Behavior of exchange all inner variables moved into EXCH_InstTypedef
+- Order of CRC-16 bytes in message
 
 ### Deleted
 - EXCH_PrepareMsg function as obsolete in simple_exchange

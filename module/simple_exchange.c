@@ -111,8 +111,8 @@ void EXCH_Write(EXCH_InstTypedef *exch,
     exch->write_function(length);
     for (i = 0; i < length; ++i)
         exch->write_function(data[i]);
-    exch->write_function((crc >> 8) & 0xFF);
     exch->write_function(crc & 0xFF);
+    exch->write_function((crc >> 8) & 0xFF);
 }
 
 void EXCH_Ack(const EXCH_InstTypedef *exch)
@@ -172,12 +172,12 @@ void EXCH_Dispatcher(EXCH_InstTypedef *exch)
         case EXCH_State_Crc:
             if (crc_cnt == 0)
             {
-                msg->crc = (byte & 0xFF) << 8;
+                msg->crc = byte & 0xFF;
                 crc_cnt++;
             }
             else if (crc_cnt == 1)
             {
-                msg->crc |= byte & 0xFF;
+                msg->crc |= (byte & 0xFF) << 8;
                 if (msg->crc == EXCH_Crc16(msg->data, msg->length))
                 {
                     exch->parse_function(msg);
