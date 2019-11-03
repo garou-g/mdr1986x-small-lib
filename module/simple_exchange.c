@@ -2,14 +2,15 @@
  * @file    simple_exchange.c
  * @author  GaROU (xgaroux@gmail.com)
  * @brief   Simple serial exchange protocol
- * @version 0.6
- * @date    2019-07-15
+ * @version 0.7
+ * @date    2019-11-03
  *
  * @note
  * Exchange uses fixed size messages with start and end markers. It has
  * one byte for commands and array for data bytes.
  *
  * Changelog:
+ * v0.7 Added typedefs for callbacks.
  * v0.6 Changed behavior of module: all inner variables moved into
  *      EXCH_InstTypedef. It allows to create multiply instances of module
  *      with different physical layers.
@@ -37,7 +38,7 @@
 /* Private macros ------------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 static void dummy_write(uint8_t d) {}
-static int dummy_read() { return -1; }
+static int32_t dummy_read() { return -1; }
 static void dummy_parse(EXCH_MsgTypedef* d) {}
 static void dummy_ack(EXCH_AckTypedef d) {}
 
@@ -76,8 +77,6 @@ static const uint16_t CRC16_TABLE[256] = {
     0xEF1F, 0xFF3E, 0xCF5D, 0xDF7C, 0xAF9B, 0xBFBA, 0x8FD9, 0x9FF8,
     0x6E17, 0x7E36, 0x4E55, 0x5E74, 0x2E93, 0x3EB2, 0x0ED1, 0x1EF0
 };
-
-// static EXCH_StateTypedef state = EXCH_State_Idle;
 
 /* Exported functions --------------------------------------------------------*/
 void EXCH_Init(EXCH_InstTypedef *exch, uint32_t size)

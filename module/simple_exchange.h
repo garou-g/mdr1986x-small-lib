@@ -21,6 +21,15 @@
 #define EXCH_NAK                    0x15    /*!< Not acknowledge command      */
 
 /* Exported types ------------------------------------------------------------*/
+/* Interface write callback function */
+typedef void (*EXCH_WriteCallback)(uint8_t);
+/* Interface read callback function */
+typedef int32_t (*EXCH_ReadCallback)(void);
+/* Parse received message callback function */
+typedef void (*EXCH_ParseCallback)(EXCH_MsgTypedef *);
+/* ACK reception callback function */
+typedef void (*EXCH_AckCallback)(EXCH_AckTypedef);
+
 typedef enum
 {
     EXCH_State_Idle,
@@ -54,12 +63,12 @@ typedef struct
 typedef struct
 {
     /* Callbacks needs to setup from user code */
-    void                (*write_function)(uint8_t);
-    int                 (*read_function)();
-    void                (*parse_function)(EXCH_MsgTypedef*);
-    void                (*ack_function)(EXCH_AckTypedef);
+    EXCH_WriteCallback  write_function;
+    EXCH_ReadCallback   read_function;
+    EXCH_ParseCallback  parse_function;
+    EXCH_AckCallback    ack_function;
 
-    /* Private data of instance structure. Modified only internaly my module */
+    /* Private data of instance structure. Modified only internaly in module */
     EXCH_MsgTypedef     *msg;
     uint32_t            msg_size;
     EXCH_StateTypedef   state;
