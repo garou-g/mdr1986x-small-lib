@@ -21,15 +21,6 @@
 #define EXCH_NAK                    0x15    /*!< Not acknowledge command      */
 
 /* Exported types ------------------------------------------------------------*/
-/* Interface write callback function */
-typedef void (*EXCH_WriteCallback)(uint8_t);
-/* Interface read callback function */
-typedef int32_t (*EXCH_ReadCallback)(void);
-/* Parse received message callback function */
-typedef void (*EXCH_ParseCallback)(EXCH_MsgTypedef *);
-/* ACK reception callback function */
-typedef void (*EXCH_AckCallback)(EXCH_AckTypedef);
-
 typedef enum
 {
     EXCH_State_Idle,
@@ -59,6 +50,15 @@ typedef struct
     uint16_t            crc;        /*!< Frame checksum 2 bytes               */
 
 } EXCH_MsgTypedef;
+
+/* Interface write callback function */
+typedef void (*EXCH_WriteCallback)(uint8_t);
+/* Interface read callback function */
+typedef int32_t (*EXCH_ReadCallback)(void);
+/* Parse received message callback function */
+typedef void (*EXCH_ParseCallback)(EXCH_MsgTypedef *);
+/* ACK reception callback function */
+typedef void (*EXCH_AckCallback)(EXCH_AckTypedef);
 
 typedef struct
 {
