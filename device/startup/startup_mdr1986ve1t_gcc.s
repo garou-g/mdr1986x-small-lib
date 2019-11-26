@@ -299,6 +299,7 @@ Default_Handler:
 	.set	\handler_name, Default_Handler
 	.endm
 
+#ifdef RAM_BOOT
 NMI_Handler:
     ldr	r3, =0x1008
     ldr r2, [r3]
@@ -475,5 +476,46 @@ EXT_INT4_IRQHandler:
     ldr	r3, =0x10B4
     ldr r2, [r3]
     bx r2
+
+#else
+	def_irq_handler NMI_Handler
+	def_irq_handler HardFault_Handler
+	def_irq_handler SVC_Handler
+	def_irq_handler PendSV_Handler
+	def_irq_handler SysTick_Handler
+
+/* External Interrupts */
+
+	def_irq_handler MIL_STD_1553B2_IRQHandler
+	def_irq_handler MIL_STD_1553B1_IRQHandler
+	def_irq_handler USB_IRQHandler
+	def_irq_handler CAN1_IRQHandler
+	def_irq_handler CAN2_IRQHandler
+	def_irq_handler DMA_IRQHandler
+	def_irq_handler UART1_IRQHandler
+	def_irq_handler UART2_IRQHandler
+	def_irq_handler SSP1_IRQHandler
+	def_irq_handler BUSY_IRQHandler
+	def_irq_handler ARINC429R_IRQHandler
+	def_irq_handler POWER_IRQHandler
+	def_irq_handler WWDG_IRQHandler
+	def_irq_handler TIMER4_IRQHandler
+	def_irq_handler TIMER1_IRQHandler
+	def_irq_handler TIMER2_IRQHandler
+	def_irq_handler TIMER3_IRQHandler
+	def_irq_handler ADC_IRQHandler
+	def_irq_handler ETHERNET_IRQHandler
+	def_irq_handler SSP3_IRQHandler
+	def_irq_handler SSP2_IRQHandler
+	def_irq_handler ARINC429T1_IRQHandler
+	def_irq_handler ARINC429T2_IRQHandler
+	def_irq_handler ARINC429T3_IRQHandler
+	def_irq_handler ARINC429T4_IRQHandler
+	def_irq_handler BKP_IRQHandler
+	def_irq_handler EXT_INT1_IRQHandler
+	def_irq_handler EXT_INT2_IRQHandler
+	def_irq_handler EXT_INT3_IRQHandler
+	def_irq_handler EXT_INT4_IRQHandler
+#endif
 
 	.end

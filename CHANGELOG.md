@@ -14,6 +14,7 @@ in simple_exchange
 
 ### Fixed
 - Using of incorrect function names in queue module
+- Fixed IRQ definition in 1986ve1t startup file for and without RAM boot.
 
 ### Changed
 - Type of data in queue module to uint8_t except of return values, because
