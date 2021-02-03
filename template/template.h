@@ -1,6 +1,6 @@
 /*******************************************************************************
  * @file    template.h
- * @author  GaROU (xgaroux@gmail.com)
+ * @author  garou (xgaroux@gmail.com)
  * @brief   Header file of template.
  ******************************************************************************/
 
