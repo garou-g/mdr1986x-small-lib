@@ -1,7 +1,7 @@
 # Changelog
 mdr1986x-small-lib changelog
 
-## [Unreleased]
+## [0.3] - 2019-11-26
 ### Added
 - Using of malloc to allocate memory for queue buffer
 - Using of malloc to allocate memory for message buffer
