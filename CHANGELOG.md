@@ -1,6 +1,16 @@
 # Changelog
 mdr1986x-small-lib changelog
 
+## [0.4] - 2021-12-05
+
+### Added
+
+- Separate module for CRC-32 with pre-calculated table.
+
+### Deleted
+
+- CRC-32 calculation with table calculation from system module.
+
 ## [0.3] - 2019-11-26
 ### Added
 - Using of malloc to allocate memory for queue buffer

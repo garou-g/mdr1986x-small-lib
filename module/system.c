@@ -1,12 +1,13 @@
 /*******************************************************************************
  * @file    system.c
- * @author  GaROU (xgaroux@gmail.com)
+ * @author  garou (xgaroux@gmail.com)
  * @brief   System management
  * @version 0.4
- * @date    2019-07-03
+ * @date    2021-12-05
  *
  * @note
  * Changelog:
+ * v.05 crc32 calculation moved to separated module.
  * v0.4 Added HSE and clock source type parameters in SYS_ClkInit.
  *      Added some frequency values in SYS_Freq_Enum.
  * v0.3 Added calculating of first memory page by start_address parameter.
@@ -17,6 +18,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "system.h"
+#include "crc.h"
 #include "mdr1986.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,7 +39,6 @@ static SYS_State_Type sys_state = SYS_State_Unknown;
 
 /* Private function prototypes -----------------------------------------------*/
 static uint32_t getLastProgramAddress(uint32_t start_page);
-static uint32_t crc32(uint8_t *buf, uint32_t len);
 
 /* Exported functions --------------------------------------------------------*/
 /**
@@ -235,43 +236,6 @@ static uint32_t getLastProgramAddress(uint32_t start_page)
     }
 
     return found_address;
-}
-
-/**
- * @brief Name: CRC-32
- *      Poly  : 0x04C11DB7    x^32 + x^26 + x^23 + x^22 + x^16 + x^12 + x^11
- *                            + x^10 + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
- *      Init  : 0xFFFFFFFF
- *      Revert: true
- *      XorOut: 0xFFFFFFFF
- *      Check : 0xCBF43926 ("123456789")
- *      MaxLen: 268 435 455 bytes (2 147 483 647 bits)
- * @param  data for calculating
- * @param  len of data
- * @retval CRC-32 checksum byte
- */
-static uint32_t crc32(uint8_t *data, uint32_t len)
-{
-    const int CRC_TABLE_SIZE = 256;
-    uint32_t crc_table[CRC_TABLE_SIZE];
-    uint32_t crc;
-    int i, j;
-
-    for (i = 0; i < CRC_TABLE_SIZE; i++)
-    {
-        crc = i;
-        for (j = 0; j < 8; j++)
-            crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320U : crc >> 1;
-
-        crc_table[i] = crc;
-    };
-
-    crc = 0xFFFFFFFFU;
-
-    while (len--)
-        crc = crc_table[(crc ^ *data++) & 0xFF] ^ (crc >> 8);
-
-    return crc ^ 0xFFFFFFFFU;
 }
 
 /***************************** END OF FILE ************************************/
