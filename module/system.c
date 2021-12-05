@@ -7,7 +7,7 @@
  *
  * @note
  * Changelog:
- * v.05 crc32 calculation moved to separated module.
+ * v0.5 crc32 calculation moved to separated module.
  * v0.4 Added HSE and clock source type parameters in SYS_ClkInit.
  *      Added some frequency values in SYS_Freq_Enum.
  * v0.3 Added calculating of first memory page by start_address parameter.
