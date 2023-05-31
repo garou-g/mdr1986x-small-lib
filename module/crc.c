@@ -212,7 +212,7 @@ uint16_t crc16(const uint8_t *buf, uint32_t len)
  * @param  len of data
  * @retval CRC-32 checksum byte
  */
-uint32_t crc32(uint8_t *buf, uint32_t len)
+uint32_t crc32(const uint8_t *buf, uint32_t len)
 {
     uint32_t crc = 0xFFFFFFFFU;
 

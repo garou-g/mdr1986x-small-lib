@@ -22,7 +22,7 @@
 
 uint8_t crc8(const uint8_t *buf, uint32_t len);
 uint16_t crc16(const uint8_t *buf, uint32_t len);
-uint32_t crc32(uint8_t *buf, uint32_t len);
+uint32_t crc32(const uint8_t *buf, uint32_t len);
 
 /* Private types -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
