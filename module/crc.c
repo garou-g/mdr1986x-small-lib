@@ -7,11 +7,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "crc.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private defines -----------------------------------------------------------*/
-/* Private macros ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
 #define CRC8_TABLE_SIZE 256
 static const uint8_t CRC8_TABLE[CRC8_TABLE_SIZE] = {
     0x00, 0x31, 0x62, 0x53, 0xC4, 0xF5, 0xA6, 0x97,
@@ -152,9 +147,6 @@ static const uint32_t CRC32_TABLE[CRC32_TABLE_SIZE] = {
     0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D
 };
 
-/* Private function prototypes -----------------------------------------------*/
-/* Exported functions --------------------------------------------------------*/
-
 /**
  * @brief Name: CRC-8
  *      Poly  : 0x31    x^8 + x^5 + x^4 + 1
@@ -163,7 +155,7 @@ static const uint32_t CRC32_TABLE[CRC32_TABLE_SIZE] = {
  *      XorOut: 0x00
  *      Check : 0xF7 ("123456789")
  *      MaxLen: 15 bytes (127 bits)
- * @param  data for calculating
+ * @param  buf for calculating
  * @param  len of data
  * @retval CRC-8 checksum byte
  */
@@ -208,7 +200,7 @@ uint16_t crc16(const uint8_t *buf, uint32_t len)
  *      XorOut: 0xFFFFFFFF
  *      Check : 0xCBF43926 ("123456789")
  *      MaxLen: 268 435 455 bytes (2 147 483 647 bits)
- * @param  data for calculating
+ * @param  buf for calculating
  * @param  len of data
  * @retval CRC-32 checksum byte
  */
@@ -221,7 +213,5 @@ uint32_t crc32(const uint8_t *buf, uint32_t len)
 
     return crc ^ 0xFFFFFFFFU;
 }
-
-/* Private functions ---------------------------------------------------------*/
 
 /***************************** END OF FILE ************************************/
