@@ -84,8 +84,6 @@ void EXCH_Ack(const EXCH_InstTypedef *exch);
 void EXCH_Nak(const EXCH_InstTypedef *exch);
 void EXCH_Dispatcher(EXCH_InstTypedef *exch);
 
-uint16_t EXCH_Crc16(const uint8_t *data, uint16_t len);
-
 #ifdef __cplusplus
 }
 #endif
